@@ -2,7 +2,7 @@
 $host = "localhost";
 $user = "root";
 $pass = "";
-$dbname = "youtube_clone"; // ya jo DB name hai
+$dbname = "video_app"; // ya jo DB name hai
 
 $conn = new mysqli($host, $user, $pass, $dbname);
 
@@ -11,5 +11,5 @@ if ($conn->connect_error) {
 }
 
 // Test
-echo "DB connected successfully";
+// echo "DB connected successfully";
 ?>

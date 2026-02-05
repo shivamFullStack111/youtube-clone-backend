@@ -1,32 +1,66 @@
 <?php
 
+header("Content-Type: application/json");
 
 // Allow all origins
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type, Authorization");
 
+include("../../config/db.php"); // DB connection
 
+$data = json_decode(file_get_contents("php://input"), true);
 
-include('../../config/db.php');
+$name        = $data['name'] ?? '';
+$email       = $data['email'] ?? '';
+$password    = $data['password'] ?? '';
+$channelName = $data['channelName'] ?? '';
+$description = $data['description'] ?? '';
 
-$name = $_POST['name'] ?? '';
-$email = $_POST['email'] ?? '';
-$password = $_POST['password'] ?? '';
-
-if(!$name || !$email || !$password){
-    echo json_encode(["success"=>false, "message"=>"All fields required"]);
+if (!$name || !$email || !$password) {
+    echo json_encode([
+        "success" => false,
+        "message" => "Name, Email and Password are required"
+    ]);
     exit;
 }
 
-// Check if email exists
-$check = $conn->query("SELECT * FROM users WHERE email='$email'");
-if($check->num_rows > 0){
-    echo json_encode(["success"=>false, "message"=>"Email already exists"]);
+// check email already exists
+$check = mysqli_query($conn, "SELECT id FROM users WHERE email='$email'");
+if (mysqli_num_rows($check) > 0) {
+    echo json_encode([
+        "success" => false,
+        "message" => "Email already registered"
+    ]);
     exit;
 }
 
-// Insert user
-$conn->query("INSERT INTO users (name,email,password) VALUES ('$name','$email','$password')");
-echo json_encode(["success"=>true, "message"=>"Signup successful"]);
-?>
+// insert user
+$query = "INSERT INTO users 
+(name, email, password, channelName, channelDescription, subscribers, joinedOn)
+VALUES 
+('$name', '$email', '$password', '$channelName', '$description', '[]', NOW())";
+
+if (mysqli_query($conn, $query)) {
+
+    $userId = mysqli_insert_id($conn);
+
+    // fetch inserted user
+    $userQuery = mysqli_query($conn, "SELECT 
+        id, name, email, channelName, channelDescription, subscribers, joinedOn 
+        FROM users WHERE id='$userId'");
+
+    $user = mysqli_fetch_assoc($userQuery);
+
+    echo json_encode([
+        "success" => true,
+        "message" => "Signup successful",
+        "user" => $user
+    ]);
+
+} else {
+    echo json_encode([
+        "success" => false,
+        "message" => "Signup failed"
+    ]);
+}
