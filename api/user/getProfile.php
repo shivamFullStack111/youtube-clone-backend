@@ -1,7 +1,19 @@
 <?php
+// ================= CORS HEADERS =================
+header("Access-Control-Allow-Origin: *");
+header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
+header("Access-Control-Allow-Headers: Content-Type, Authorization");
 header("Content-Type: application/json");
 
+// Handle preflight OPTIONS request
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
+    exit;
+}
+
+// ================= DB CONNECTION =================
 $conn = new mysqli("localhost", "root", "", "video_app");
+
 if ($conn->connect_error) {
     echo json_encode([
         "success" => false,
@@ -10,7 +22,7 @@ if ($conn->connect_error) {
     exit;
 }
 
-// userId required
+// ================= VALIDATION =================
 if (!isset($_GET['userId'])) {
     echo json_encode([
         "success" => false,
@@ -19,12 +31,20 @@ if (!isset($_GET['userId'])) {
     exit;
 }
 
-$userId = $_GET['userId'];
+$userId = $conn->real_escape_string($_GET['userId']);
 
-$sql = "SELECT id, name, email, channelName, channelDescription, 
-               totalSubscriber, subscribers, joinedOn 
-        FROM users 
-        WHERE id='$userId'";
+// ================= QUERY =================
+$sql = "SELECT 
+            id,
+            name,
+            email,
+            channelName,
+            channelDescription,
+            totalSubscriber,
+            subscribers,
+            joinedOn
+        FROM users
+        WHERE id = '$userId'";
 
 $result = $conn->query($sql);
 
@@ -38,8 +58,10 @@ if ($result->num_rows === 0) {
 
 $user = $result->fetch_assoc();
 
-// Decode subscribers JSON
-$user['subscribers'] = json_decode($user['subscribers']);
+// Decode JSON fields safely
+$user['subscribers'] = $user['subscribers']
+    ? json_decode($user['subscribers'], true)
+    : [];
 
 echo json_encode([
     "success" => true,
