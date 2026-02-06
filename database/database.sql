@@ -167,34 +167,34 @@ VALUES
  '[]'
 );
 
--- =========================
--- SAMPLE VIDEO
--- =========================
-INSERT INTO videos
-(
- title,
- description,
- videoUrl,
- tags,
- category,
- uploadedBy,
- likesArray,
- dislikeArray
-)
-VALUES
-(
- 'First Video',
- 'This is demo video',
- 'https://example.com/video.mp4',
- 'tech,education',
- 'Education',
- '{
-   "id":1,
-   "name":"Admin User",
-   "email":"admin@gmail.com",
-   "channelName":"Admin Channel",
-   "channelDescription":"This is my first channel"
- }',
- '[]',
- '[]'
-);
+-- -- =========================
+-- -- SAMPLE VIDEO
+-- -- =========================
+-- INSERT INTO videos
+-- (
+--  title,
+--  description,
+--  videoUrl,
+--  tags,
+--  category,
+--  uploadedBy,
+--  likesArray,
+--  dislikeArray
+-- )
+-- VALUES
+-- (
+--  'First Video',
+--  'This is demo video',
+--  'https://example.com/video.mp4',
+--  'tech,education',
+--  'Education',
+--  '{
+--    "id":1,
+--    "name":"Admin User",
+--    "email":"admin@gmail.com",
+--    "channelName":"Admin Channel",
+--    "channelDescription":"This is my first channel"
+--  }',
+--  '[]',
+--  '[]'
+-- );
